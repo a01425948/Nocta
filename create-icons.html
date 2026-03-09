@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nocta Icon Generator</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        // Function to create Nocta icon at different sizes
+        function createIcon(size) {
+            const canvas = document.getElementById('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#8b5cf6');
+            gradient.addColorStop(1, '#3b82f6');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+
+            // Draw moon
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(size * 0.5, size * 0.5, size * 0.3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw stars
+            const drawStar = (x, y, starSize) => {
+                ctx.fillStyle = '#ffffff';
+                ctx.beginPath();
+                for (let i = 0; i < 5; i++) {
+                    const angle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+                    const xPos = x + Math.cos(angle) * starSize;
+                    const yPos = y + Math.sin(angle) * starSize;
+                    if (i === 0) {
+                        ctx.moveTo(xPos, yPos);
+                    } else {
+                        ctx.lineTo(xPos, yPos);
+                    }
+                }
+                ctx.closePath();
+                ctx.fill();
+            };
+
+            drawStar(size * 0.2, size * 0.2, size * 0.08);
+            drawStar(size * 0.8, size * 0.25, size * 0.06);
+            drawStar(size * 0.75, size * 0.75, size * 0.07);
+
+            // Download
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `icon-${size}.png`;
+                a.click();
+            });
+        }
+
+        // Generate all icon sizes
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        let index = 0;
+
+        function generateNext() {
+            if (index < sizes.length) {
+                createIcon(sizes[index]);
+                index++;
+                setTimeout(generateNext, 500);
+            }
+        }
+
+        generateNext();
+    </script>
+</body>
+</html>
